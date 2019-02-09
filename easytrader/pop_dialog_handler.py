@@ -55,16 +55,29 @@ class TradePopDialogHandler(PopDialogHandler):
             if "委托价格的小数价格应为" in content:
                 self._submit_by_shortcut()
                 return None
-
+                
+            if "您是否确定以上融券回购(逆回购)委托" in content:
+                self._submit_by_shortcut()
+                return None
+                
             return None
 
         if title == "提示":
             content = self._extract_content()
+            print(content)
             if "成功" in content:
                 entrust_no = self._extract_entrust_id(content)
                 self._submit_by_click()
                 return {"entrust_no": entrust_no}
-
+            if "融券回购失败，当前时间不允许此类证券交易。" in content:
+                self._submit_by_click()
+                return {"message": "market closed"}
+            if "提交失败：[120147][当前时间不允许委托]" in content:
+                self._submit_by_click()
+                return {"message": "market closed"}
+            if "提交失败：可用资金不足。" in content:
+                self._submit_by_click()
+                return {"message": "insufficient fund"}
             self._submit_by_click()
             time.sleep(0.05)
             raise exceptions.TradeError(content)
