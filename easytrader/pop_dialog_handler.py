@@ -78,6 +78,12 @@ class TradePopDialogHandler(PopDialogHandler):
             if "提交失败：可用资金不足。" in content:
                 self._submit_by_click()
                 return {"message": "insufficient fund"}
+            if "提交失败：证券可用数量不足。" in content:
+                self._submit_by_click()
+                return {"message": "insufficient security"}
+            if "提交失败：委托买入单位或卖出单位校验失败。":
+                self._submit_by_click()
+                return {"message": "invalid security volumn"}
             self._submit_by_click()
             time.sleep(0.05)
             raise exceptions.TradeError(content)

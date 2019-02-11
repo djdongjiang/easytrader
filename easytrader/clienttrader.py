@@ -378,9 +378,18 @@ class ClientTrader(IClientTrader):
     ):
         handler = handler_class(self._app)
 
+        # try multi times
+        retry_count = 0
         while self._is_exist_pop_dialog():
-            title = self._get_pop_dialog_title()
-
+            title = ""
+            try:
+              title = self._get_pop_dialog_title()
+            except pywinauto.findwindows.ElementNotFoundError:
+              if retry_count < 2:
+                retry_count += 1
+                continue
+              else:
+                raise("self._get_pop_dialog_title")
             result = handler.handle(title)
             if result:
                 return result
